@@ -1,0 +1,589 @@
+=====================================================================
+ CHALLENGE 1: PREDICT APARTMENT RENT, EXPLAINED FROM ZERO
+ CAI 4105, Intro to Machine Learning
+=====================================================================
+
+HOW THIS FILE IS ORGANIZED
+  PART 1  What you have to do, in plain English
+  PART 2  Dictionary: every word you'll run into, explained simply
+  PART 3  Proof: each step matched to your module slides and lab
+  PART 4  What is NOT in the slides (so you know what came from me)
+
+
+=====================================================================
+ PART 1: WHAT YOU HAVE TO DO
+=====================================================================
+
+THE ONE-SENTENCE VERSION
+  You get a spreadsheet of apartments WITH their rent. You build a
+  program that learns the pattern, then use it to guess the rent for
+  2,467 apartments whose rent is hidden.
+
+THE TWO FILES YOU GET
+  challenge1_train.csv   7,398 apartments, rent INCLUDED.
+                         This is your "homework": you learn from it,
+                         test on it, and tune on it.
+  challenge1_test.csv    2,467 apartments, rent HIDDEN.
+                         This is the "locked final exam". Use it ONLY at
+                         the very end to make your guesses.
+
+  The rent column is named:  price   (this is what you predict)
+  The ID column:             ID      (just a row number. NEVER use it
+                                     as a clue.)
+
+THE 6 STEPS
+
+  STEP 1: LOOK AT THE DATA AND PREPARE IT
+    - Open the training file. What columns exist? Which are numbers
+      (like square feet) and which are words (like city)?
+    - Any blanks? Fill them in (imputation).
+    - Turn word columns into 0/1 columns (one-hot encoding).
+    - Optionally put the number columns on the same scale (scaling).
+    - The data is already mostly clean, so don't overthink this.
+
+  STEP 2: PICK A FAIR WAY TO TEST (your "validation strategy")
+    - Use 5-fold cross-validation ON THE TRAINING FILE ONLY.
+    - Grade every model with RMSE (the typical $ miss; lower = better).
+    - Put cleaning + model together in a Pipeline so nothing leaks.
+    - Use the SAME folds and the SAME metric for every model so the
+      comparison is fair.
+
+  STEP 3: TRY THE 4 REQUIRED MODELS
+    1. Linear Regression   (the best straight line, Module 3)
+    2. Decision Tree       (yes/no question flowchart, Module 4)
+    3. Random Forest       (many trees that vote/average, Module 4)
+    4. Gradient Boosting   (trees in a row fixing mistakes, Module 4;
+                            XGBoost is the version used in class)
+    Make a TABLE of each model's cross-validation RMSE.
+    Also note the training RMSE vs the validation RMSE. A big gap
+    means overfitting.
+
+  STEP 4: MAKE THEM BETTER
+    - Grid Search: automatically tries combinations of settings
+      (hyperparameters) and keeps the combo with the lowest CV RMSE.
+    - Optional "feature engineering": build new clues out of the old
+      ones (example: square feet per bedroom).
+
+  STEP 5: PICK THE WINNER AND EXPLAIN WHY (a few sentences)
+    Judge on:
+      - lowest validation RMSE
+      - not overfitting (train and validation scores are close)
+      - how complicated it is
+      - how slow it is to train
+      - how easy it is to explain
+    (Most likely winner: Gradient Boosting/XGBoost or Random Forest.)
+
+  STEP 6: MAKE THE FINAL PREDICTIONS
+    - Train the winner on ALL of the training file.
+    - Predict the price for every row of challenge1_test.csv.
+    - Save predictions.csv with exactly 2 columns:  ID, price
+      (2,467 rows, one per test apartment).
+
+WHAT TO PUT IN YOUR TEAM'S GITHUB REPO
+  [ ] The final Jupyter notebook. It must run top to bottom: load
+      data -> preprocess -> validate -> compare -> tune -> pick ->
+      predict.
+  [ ] predictions.csv
+  [ ] README.md: a short summary of your approach, validation
+      strategy, models tried, final model and final validation RMSE.
+  [ ] requirements.txt: the list of Python libraries and versions,
+      so someone else can rerun your notebook ("reproduce your
+      environment").
+  [ ] Any extra code files the notebook needs.
+  Plus, separately: EACH person submits their own Peer-review form.
+
+RULES THAT CAN COST YOU POINTS
+  - All 4 required models must be evaluated.
+  - Train, tune and validate using ONLY the training file.
+  - Test file = final predictions only. No peeking, no tuning on it.
+  - Don't try to find the real hidden prices. No outside datasets.
+  - Don't share code or predictions with other teams.
+  - It must be reproducible. Set random_state=42 everywhere.
+  - GitHub commits are used as proof that you participated. Make
+    your OWN commits.
+
+HOW YOU'RE GRADED
+  Part leaderboard (your RMSE against the hidden prices; lower wins),
+  part how clean and correct your method is.
+
+
+=====================================================================
+ PART 2: DICTIONARY (in the order you'll meet the words)
+=====================================================================
+
+-- BASICS ------------------------------------------------------------
+
+Machine learning (ML)
+  Teaching a computer by showing it examples instead of writing
+  rules. It finds the pattern between the clues and the answer.
+
+Dataset / data
+  A table (like an Excel sheet). Each ROW is one apartment. Each
+  COLUMN is one piece of info about it.
+
+Observation
+  One row = one apartment.
+
+Feature (also called predictor, variable or X)
+  A CLUE column the model uses to guess: bedrooms, square feet,
+  city... "X" is math's nickname for all the clue columns.
+
+Target (also called y, label or outcome)
+  The ANSWER column you want to predict. Here: price.
+
+Numerical feature
+  A clue that's a number (square feet = 850).
+
+Categorical feature
+  A clue that's a word or label (city = "Miami", pets = "yes").
+
+Model
+  The "guessing machine". A math recipe that turns clues into a
+  guess.
+
+Training / fitting (.fit() in code)
+  The model "studying" the examples and adjusting itself until its
+  guesses match the real answers as well as possible.
+
+Prediction (.predict() in code)
+  The model's guess for something. The goal is good guesses on NEW
+  data.
+
+Supervised learning
+  Learning with an answer key: every training row has the right
+  answer. This challenge is supervised.
+
+Regression
+  Supervised learning where the answer is a NUMBER (rent in $).
+  This challenge is a regression problem. (The opposite is
+  "classification", where the answer is a category like yes/no.
+  The Lab 4&5 credit-approval notebook was classification.)
+
+-- TESTING HONESTLY ----------------------------------------------------
+
+Generalization
+  How well the model does on data it has NEVER seen. This is the
+  whole goal.
+
+Overfitting
+  The model MEMORIZED the training data, noise included. Great score
+  on training, bad on new data. Like a student who memorized the
+  practice test. Sign: training RMSE much lower (better) than
+  validation RMSE.
+
+Underfitting
+  The model is too simple to even learn the training data. Bad on
+  BOTH training and validation.
+
+Noise
+  Random flukes in the data that aren't a real pattern.
+
+Train / validation / test split
+  Training = homework (the model learns from it).
+  Validation = practice quiz (compare and tune models).
+  Test = final exam (opened once at the end).
+  In this challenge, the TEACHER already locked the test set away
+  (the hidden prices). You make your own validation using
+  cross-validation on the training file.
+
+Holdout validation
+  Setting aside ONE chunk of the training data as the practice quiz.
+  Simple, but one chunk can be lucky or unlucky.
+
+Cross-validation (CV) / k-fold cross-validation
+  Cut the training data into k slices (usually 5 = "5-fold"). Train
+  on 4 slices and test on the 5th. Repeat 5 times so every slice gets
+  a turn being the quiz. Average the 5 scores = a more trustworthy
+  grade. The spread of the 5 scores = how consistent the model is.
+
+Validation strategy
+  Your chosen method for testing fairly (e.g., "5-fold CV on the
+  training set, RMSE"). Use the SAME one for every model.
+
+Data leakage
+  Info the model shouldn't have sneaks into training. Example: you
+  compute averages (for filling blanks or scaling) using ALL the data
+  before splitting. Then your scores look better than they really
+  are. Fix: learn every preprocessing step from training data only.
+  Pipelines do this automatically during CV.
+
+random_state
+  A number (like 42) that makes "random" things (shuffling, splits,
+  forests) come out the same every run, so your results are
+  reproducible.
+
+Reproducible
+  Someone else can run your notebook and get the same results.
+
+-- PREPARING THE DATA (preprocessing) --------------------------------
+
+Preprocessing
+  Cleaning and converting the data so models can use it.
+
+EDA (Exploratory Data Analysis)
+  "Looking around" the data first: column types, missing values,
+  averages, min/max, weird values, how price is spread out.
+  In code: df.head(), df.info(), df.describe(), df.isna().sum()
+
+Missing values / NaN
+  Blank cells. NaN = "Not a Number" = empty.
+
+Imputation (SimpleImputer)
+  Filling blanks with a sensible guess: the average (mean) or middle
+  (median) for numbers, the most common value ("most_frequent") for
+  categories.
+
+Encoding / One-hot encoding (OneHotEncoder)
+  Turning a word column into 0/1 columns. "City" with Miami/Tampa
+  becomes two columns, City_Miami and City_Tampa, holding 1 or 0.
+  handle_unknown="ignore" = don't crash if the test file has a city
+  the training file never had.
+
+Scaling / standardization (StandardScaler)
+  Rewriting numbers as "how far above or below average", so every
+  column is on the same ruler. Matters for Linear Regression.
+  Trees don't really need it.
+
+Outlier
+  An extreme, unusual row (a $30,000/month penthouse). Linear
+  Regression is sensitive to these. Trees handle them better.
+
+Feature engineering
+  Creating NEW clue columns from existing ones to help the model.
+  Example: price is often skewed, so some people model log(price).
+  Or sq_ft / bedrooms. Optional, but encouraged.
+
+ColumnTransformer
+  A scikit-learn tool that applies different preprocessing to
+  different columns: number columns get imputer (+ scaler), word
+  columns get imputer + one-hot.
+
+Pipeline
+  An assembly line that glues preprocessing + model into ONE object.
+  You call .fit() once and everything happens in order. It's
+  leak-proof inside cross-validation.
+
+-- THE MODELS -----------------------------------------------------------
+
+Baseline
+  The simplest model to compare against. If a fancy model can't beat
+  it, it isn't worth it. Linear Regression is a common baseline.
+
+Linear Regression (LinearRegression)
+  Finds the best straight line (or flat plane) through the data:
+  price = b0 + b1*clue1 + b2*clue2 + ...
+  The b's (called beta, or coefficients) are numbers the computer
+  figures out. Simple and easy to explain, but it can only capture
+  straight-line patterns.
+
+Coefficient / beta (b)
+  "How much the price changes when that clue goes up by 1."
+
+Decision Tree (DecisionTreeRegressor)
+  A flowchart of yes/no questions ("sq ft > 900?") ending in a guess.
+  Easy to explain. Overfits easily if it grows too deep.
+
+Random Forest (RandomForestRegressor)
+  Hundreds of slightly different trees, each trained on a random
+  sample of rows and clues. For regression, it AVERAGES their
+  guesses. More stable and accurate than one tree.
+
+Gradient Boosting (GradientBoostingRegressor or XGBRegressor)
+  Trees built ONE AFTER ANOTHER. Each new tree learns to fix the
+  leftover mistakes of the team so far. Usually the most accurate on
+  spreadsheet data, but it has the most knobs to tune.
+  XGBoost = "eXtreme Gradient Boosting", the popular version used in
+  class.
+
+Ensemble
+  A model made of many models combined (Random Forest and Boosting
+  are both ensembles).
+
+Parametric vs non-parametric
+  Parametric = assumes a fixed shape (Linear Regression assumes a
+  straight line). Non-parametric = no fixed shape (trees).
+
+Interpretability
+  How easy it is for a human to understand WHY the model guessed
+  what it did. Linear Regression and a single tree = high. Forest and
+  boosting = low.
+
+Variance (in the model sense)
+  How jumpy a model is. Change the data a little and the model
+  changes a lot. Single trees have HIGH variance. Forests reduce it.
+
+-- GRADING THE MODELS -----------------------------------------------
+
+Error / residual
+  The miss for one row = real price minus guessed price.
+
+Loss function
+  The "ouch number" the model tries to shrink WHILE training. For
+  regression it's usually MSE.
+
+MSE (Mean Squared Error)
+  Square each miss, then average them. Squaring makes big misses hurt
+  a lot more.
+
+RMSE (Root Mean Squared Error)  <-- YOUR MAIN METRIC
+  The square root of MSE. It's back in DOLLARS, so roughly "the
+  typical miss". RMSE = 300 means your guesses are usually off by
+  about $300. LOWER = BETTER.
+
+MAE (Mean Absolute Error)
+  The average miss ignoring minus signs. Also in dollars.
+
+R-squared (R2)
+  0 to 1: how much of the ups and downs in price the model explains.
+  1 = perfect, 0 = no better than always guessing the average price.
+
+Evaluation metric
+  The number humans use to judge the model (here: RMSE).
+
+neg_root_mean_squared_error
+  What scikit-learn calls RMSE inside cross_val_score / GridSearchCV.
+  It's NEGATIVE because scikit-learn always maximizes scores. Just
+  flip the sign: -(-312.5) = RMSE of 312.5.
+
+-- TUNING ------------------------------------------------------------
+
+Hyperparameter
+  A setting YOU choose BEFORE training (the model does not learn it).
+  Like the oven temperature. Examples:
+    max_depth          how many questions deep a tree can go
+    min_samples_leaf   minimum rows allowed in a tree's final box
+    n_estimators       how many trees (forest / boosting)
+    learning_rate      how much each boosting tree is trusted
+                       (small = careful)
+    subsample / colsample_bytree   use a random % of rows / columns
+                       per tree (XGBoost)
+
+Hyperparameter tuning
+  Trying different settings to find the best ones.
+
+Grid Search (GridSearchCV)
+  You give a list of values for each setting. It tries EVERY
+  combination using cross-validation and reports the best combo
+  (.best_params_) and its score (.best_score_). refit=True then
+  retrains the best combo on all the training data
+  (.best_estimator_).
+  Warning: 3 x 3 x 3 = 27 combos x 5 folds = 135 trainings. Big
+  grids get slow.
+
+Regularization
+  A "keep it simple" penalty that fights overfitting. Ridge and Lasso
+  are regularized versions of linear regression.
+
+Computational requirements
+  How much time and computer power the model needs.
+
+-- SUBMISSION WORDS ---------------------------------------------
+
+Jupyter notebook (.ipynb)
+  A document of code "cells" you run one at a time. The output shows
+  under each cell.
+
+GitHub repo (repository)
+  Your team's online project folder with full version history.
+  commit = save a snapshot with a message.
+  push = upload your commits to GitHub.
+
+README.md
+  The front-page text of the repo, written in Markdown (simple
+  formatting: # for headings, - for bullets).
+
+requirements.txt
+  A list of libraries (pandas, scikit-learn, xgboost...) and versions
+  so others can install the same setup. Make it with:
+  pip freeze > requirements.txt
+
+CSV
+  "Comma-separated values". A plain spreadsheet file.
+
+predictions.csv
+  Your output file: columns ID and price, one row per test apartment.
+
+
+=====================================================================
+ PART 3: PROOF. EACH STEP MATCHED TO WHAT YOU WERE TAUGHT
+=====================================================================
+Slide numbers = the slide's position in the .pptx file.
+"Lab 4&5" = Module4/Module4&5-Lab4&5_TBM_credit_approval_student.ipynb
+
+NOTE: Module2_ML_Fundamentals_day2_students.pptx is NOT in your
+Module2 folder right now (it was there earlier this week, but only
+the day-1 deck is there now). The day-2 references below come from
+when I read that file earlier. Re-download it from Canvas to check
+them yourself.
+
+---------------------------------------------------------------------
+WHAT THE CHALLENGE IS / THE DEADLINE
+---------------------------------------------------------------------
+  Module1_Introduction.pptx, slide 6: "First challenge | October 4 |
+    Team repo with all the files".
+  Module3_MLR_student.pptx, slide 12, and Module4_TBM_students.pptx,
+    slide 17: "Challenge 1 - Regression Problem - Deadline is
+    October 4".
+  >> Your slides say Oct 4, but you said it's due in 2 days. Your
+     professor probably extended it. Double-check the date on Canvas.
+  Module2 day1, slide 5: the class's "Challenge 1" example is
+    literally "Predict apartment rent". ML learns patterns between
+    features and target (Bedrooms, Bathrooms, Sq. Ft., Location...).
+
+---------------------------------------------------------------------
+"REGRESSION", "FEATURES", "TARGET"
+---------------------------------------------------------------------
+  Module2 day1, slide 6 (Paradigms): "Supervised Machine Learning:
+    Features (X), target (y)... Regression models: Target is
+    continuous (e.g., Apartment rent)."
+  Module2 day1, slide 8: the regression algorithms listed are
+    "Linear Regression, Decision Trees & Random Forest, Gradient
+    Boosted Trees (XGBoost)". These are EXACTLY your 4 required
+    models.
+
+---------------------------------------------------------------------
+STEP 1: PREPARE THE DATA (preprocessing)
+---------------------------------------------------------------------
+  Module2 day2, slide 6 ("How should we preprocess the data?"):
+    "Numerical features: Scaling/standardization. Missing value
+    treatment. Categorical features: Encoding. Missing value
+    treatment."
+  Lab 4&5, section "2. Preprocessing Pipeline" (cells 6 and 10):
+    SimpleImputer(strategy="mean") for numbers,
+    SimpleImputer("most_frequent") + OneHotEncoder(
+    handle_unknown="ignore") for categories, combined in a
+    ColumnTransformer.
+    >> You can copy this exact structure for the challenge.
+  Lab 4&5, cell 4 ("Load & Inspect"): df.head(), df.info(),
+    .describe(), .isna().sum(). That's the "explore the data" part.
+  Lab 4&5, Exercise 1 (cell 23): try adding StandardScaler and see
+    if it helps.
+
+---------------------------------------------------------------------
+STEP 2: VALIDATION STRATEGY, LEAKAGE, PIPELINE, RMSE
+---------------------------------------------------------------------
+  Module2 day2, slide 5: Training (learn) / Holdout Validation
+    (compare, select, and tune) / Test (final evaluation), with the
+    60/20/20 example.
+  Module2 day2, slide 7 (data leakage): "Preprocessing can cause
+    leakage (e.g., preprocessing before splitting). Key takeaway:
+    Learn preprocessing parameters from training data only."
+  Module2 day2, slides 9-10 (cross-validation): "Common
+    Cross-Validation techniques (applied within the training
+    dataset): K-fold..." plus the 5-fold table. "Their average
+    provides a more robust estimate, while their variability tells
+    us how sensitive performance is."
+  Module2 day2, slide 11: "The complete pipeline can be evaluated
+    using cross-validation."
+  Module2 day2, slide 12: "Regression: MSE" (loss) and "Regression:
+    RMSE, MAE, R2" (evaluation metric). "Compare Models Fairly (Same
+    data + validation strategy + metric). Validation selects the
+    model. Test evaluates the final model."
+  Lab 4&5, cell 24: "We perform 5-fold cross-validation inside the
+    pipeline to avoid leakage."
+  Module3, slide 7: ML-style linear regression is used "if you want
+    to integrate the model in a machine learning workflow (e.g.,
+    cross-validation)".
+
+---------------------------------------------------------------------
+STEP 3: THE 4 MODELS
+---------------------------------------------------------------------
+  Linear Regression:
+    Module3_MLR_student.pptx, slides 5-10 (fit a "straight line
+    (plane, hyperplane)", OLS vs gradient descent, pros/cons,
+    assumptions). Slide 8: "Great baseline model (Solid benchmark for
+    comparing more complex models)".
+  Decision Tree / Random Forest / XGBoost:
+    Module4_TBM_students.pptx, slide 5 (overview), 6 (DT: "Regression
+    (MSE/Variance)"), 9 (RF: "Average of predictions (regression)"),
+    10 (XGBoost: "Sequentially add DTs that minimize a loss
+    function").
+  The REGRESSION versions are already written in the lab, commented
+    out. Lab 4&5, cell 2:
+      # from sklearn.tree import DecisionTreeRegressor
+      # from sklearn.ensemble import RandomForestRegressor
+      # from xgboost import XGBRegressor
+    >> The lab used the Classifier versions (credit approval =
+       yes/no). For rent you use the REGRESSOR versions.
+  The comparison table:
+    Module4, slide 15 (DT vs RF vs XGBoost table) and Module2 day2,
+    slide 13 (Activity 2 table of "Mean CV Accuracy" and "CV Range").
+    >> Your table is the same idea with Mean CV RMSE instead of
+       accuracy.
+  Checking overfitting:
+    Module2 day1, slides 10-12 (train 99% vs validation 76% = Model A
+    overfits). Lab 4&5, section 5 "Overfitting Analysis" (cells
+    17-20): train vs test gap, learning curves, depth vs score.
+
+---------------------------------------------------------------------
+STEP 4: IMPROVE (GRID SEARCH, FEATURE ENGINEERING)
+---------------------------------------------------------------------
+  Lab 4&5, section 6 "Hyperparameter Tuning - Grid Search" (cells
+    24-25): GridSearchCV(pipeline, param_grid, cv=5, scoring=...,
+    n_jobs=-1, refit=True), with grids for Random Forest
+    (n_estimators, max_depth, min_samples_leaf) and XGBoost
+    (n_estimators, max_depth, learning_rate, subsample,
+    colsample_bytree).
+    >> For the challenge, change scoring="roc_auc" to
+       scoring="neg_root_mean_squared_error".
+  Lab 4&5, cell 14: the "Tuning Priority Matrix" tells you which
+    hyperparameters matter most for DT / RF / XGBoost.
+  Lab 4&5, cell 28: "Why do we use cross-validation rather than the
+    test set to select hyperparameters?" (same rule as the
+    challenge).
+  Module4, slide 13: XGBoost needs tuning of "learning rate, depth,
+    regularization".
+  Module3, slide 8: Linear Regression has "Limited predictive power
+    with complex relationships... Needs feature engineering."
+    Slide 7: regularization (Ridge, Lasso, Elastic Net).
+
+---------------------------------------------------------------------
+STEP 5: CHOOSING THE FINAL MODEL
+---------------------------------------------------------------------
+  Module2 day1, slide 10: "Simple vs complex models (Parsimony)...
+    Find a model that captures useful patterns and generalizes."
+  Module2 day1, slide 9: Prediction vs Inference. This challenge is
+    PREDICTION ("emphasis on performance on unseen data").
+  Module2 day2, slide 13: pick a high mean AND a narrow CV range.
+  Module4, slides 11-13 ("When to use / Avoid if" for DT, RF,
+    XGBoost) and slide 15 (strength, weakness, tuning, best role).
+    >> These give you the words for your justification: validation
+       performance, overfitting, complexity, computation,
+       interpretability.
+
+---------------------------------------------------------------------
+STEP 6: PREDICTIONS + GITHUB
+---------------------------------------------------------------------
+  Module2 day2, slide 12: "Validation selects the model. Test
+    evaluates the final model."
+  Lab 4&5, cell 25: refit=True retrains the best model on all the
+    training data. .best_estimator_ is the final model you call
+    .predict() with.
+  Module1, slide 6, and Module3, slide 12: team repo, add the
+    professor as collaborator, "Team repo with all the files".
+
+
+=====================================================================
+ PART 4: WHAT IS NOT IN YOUR SLIDES (comes from me / general practice)
+=====================================================================
+These are standard and correct, but I couldn't find them word for
+word in your materials. Be aware of that.
+  - scoring="neg_root_mean_squared_error". The lab used "roc_auc"
+    because it was classification. This is scikit-learn's name for
+    RMSE.
+  - Using KFold (not StratifiedKFold) for regression. The slides
+    say "Stratified K-fold (classification)", so for regression you
+    use plain K-fold. That's consistent with the slides.
+  - requirements.txt / pip freeze. The challenge says "information
+    necessary to reproduce your environment". This is the usual way
+    to do it.
+  - log(price) and sq_ft-per-bedroom as feature-engineering ideas.
+  - "Underfitting" is defined here, but no slide defines it in
+    detail (the lab's overfit_report prints "Possible
+    underfitting").
+  - In my earlier draw.io maps, the dollar amounts, the CV scores
+    per fold and the XGBoost $500 -> $150 -> $30 example were made up
+    to illustrate. The 99/76 and 88/74 numbers, the model A/B/C table
+    and the 60/20/20 split ARE from your slides.
+
+
