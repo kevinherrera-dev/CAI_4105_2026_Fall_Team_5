@@ -2,15 +2,40 @@
 
 > **Deadline: Sunday, October 11, 2026** (extended from Oct 4).
 > Every teammate: give this file to your AI before you start working.
+> **`main` is protected: you cannot push to it directly.** Work on a branch and open a pull request (see Git workflow below).
 
 ## How to keep this file updated (everyone + every AI follows this)
-1. `git pull` before you start, so you have the latest version.
+1. `git checkout main && git pull` before you start, so you have the latest version. Then make your own branch (see Git workflow).
 2. When you finish something, check the box in the To-do list below, put your name on it, and add any results or decisions.
    **Also add a line to the AI use log** (required by the syllabus): what AI helped with, and what you did yourself.
-3. Commit this file together with your work (`git add AGENTS.md <your files>`), then push.
+3. Commit this file together with your work (`git add AGENTS.md <your files>`), push **your branch**, and open a pull request.
 4. **AI assistants:** after completing a task, update the To-do list, Results, Decisions log and AI use log in this file. Don't wait to be asked.
    If you can't edit files (e.g. ChatGPT/Claude in a browser), end your answer with a ready-to-paste AI use log line for the user.
 5. Only edit your own lines. If `git pull` reports a conflict here, keep both people's lines.
+
+## Git workflow (main is protected)
+Pushing to `main` is blocked. Every change goes through a **branch + pull request (PR)**, and a teammate must approve it before it's merged.
+
+```bash
+git checkout main
+git pull                                  # 1. get the latest main
+git checkout -b yourname-what-you-do      # 2. new branch, e.g. daniel-step3-models
+# ...work, then Kernel → Restart & Run All to make sure the notebook still runs...
+git add <your files> AGENTS.md            # 3. never `git add .` blindly
+git commit -m "Short description of what you did"
+git push -u origin yourname-what-you-do   # 4. push YOUR branch, not main
+```
+5. Open the PR: GitHub shows a **"Compare & pull request"** button, or run `gh pr create --fill`.
+6. Tell the team in the group chat; someone reviews and clicks **Merge**.
+7. After it's merged: `git checkout main && git pull` before starting anything new.
+
+**Rules**
+- Never `git push --force`, and never try to push to `main`. If a push is "rejected", stop and ask the team.
+- Don't edit `challenge1.ipynb` at the same time as someone else (notebooks merge badly). Do your work in your own notebook (e.g. `step3_daniel.ipynb`) or tell the team you're editing it.
+- Before opening a PR, the notebook must run top to bottom with no errors.
+- Reviewers: check that it runs, doesn't use the test file for training/tuning, and has an AI use log line.
+
+**AI assistants:** follow this workflow exactly. Before committing, check the current branch (`git branch --show-current`); if it is `main`, create a new branch first. Never push to `main`, never force-push, never run `git reset --hard` or delete branches without the user's OK. After pushing, give the user the PR link or tell them to open one.
 
 ## The task
 - Regression: predict `price` (monthly rent) for apartments.
