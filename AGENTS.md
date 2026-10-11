@@ -74,7 +74,7 @@ Format: `- YYYY-MM-DD (Name, AI or "manual"): what it helped with / what you did
 - 2026-10-10 (Daniel Ibarra, AI): AI wrote notebook Steps 1-2 (EDA, preprocessing, 5-fold CV setup, baseline), drafted AGENTS.md, the simple draw.io plan and .gitignore, and explained the ML concepts.
 - 2026-10-10 (Daniel Ibarra, manual): Set up the git repo, ran and checked the notebook in JupyterLab, and organized the team workflow.
 - 2026-10-10 (Joaquin De La Barrera, AI): AI added the Step 3 notebook cells (4 baseline models via `evaluate()`, comparison table, takeaways), ran the notebook, updated AGENTS.md, and explained each cell.
-- 2026-10-11 (Jiayang): Did Step 4: GridSearchCV tuning for Random Forest and XGBoost, plus log(price) on XGBoost.
+- 2026-10-10 (Jiayang, AI): Used AI for Step 4: GridSearchCV tuning for Random Forest and XGBoost, log(price) target with XGBoost, and the Step 4 write-up.
 - 2026-10-11 (Daniel Ibarra, AI): AI re-ran Step 4 and checked its numbers.
 - 2026-10-11 (Daniel Ibarra, manual): Tested Step 4 in JupyterLab and updated AGENTS.md.
 
