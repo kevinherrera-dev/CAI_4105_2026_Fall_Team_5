@@ -46,8 +46,8 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 - [x] Comparison table filled in (Results section below) (Joaquin De La Barrera)
 
 **Step 4: Improve**
-- [x] GridSearchCV on the best 1-2 models (Kevin Herrera)
-- [x] (Optional) feature engineering, e.g. log(price), sqft per bedroom (Kevin Herrera): log(price) via TransformedTargetRegressor
+- [x] GridSearchCV on the best 1-2 models (Jiayang)
+- [x] (Optional) feature engineering, e.g. log(price), sqft per bedroom (Jiayang): log(price) via TransformedTargetRegressor
 
 **Step 5: Pick the winner**
 - [ ] Write a few sentences: RMSE, overfitting gap, complexity, speed, interpretability
@@ -74,7 +74,7 @@ Format: `- YYYY-MM-DD (Name, AI or "manual"): what it helped with / what you did
 - 2026-10-10 (Daniel Ibarra, AI): AI wrote notebook Steps 1-2 (EDA, preprocessing, 5-fold CV setup, baseline), drafted AGENTS.md, the simple draw.io plan and .gitignore, and explained the ML concepts.
 - 2026-10-10 (Daniel Ibarra, manual): Set up the git repo, ran and checked the notebook in JupyterLab, and organized the team workflow.
 - 2026-10-10 (Joaquin De La Barrera, AI): AI added the Step 3 notebook cells (4 baseline models via `evaluate()`, comparison table, takeaways), ran the notebook, updated AGENTS.md, and explained each cell.
-- 2026-10-11 (Kevin Herrera): Did Step 4: GridSearchCV tuning for Random Forest and XGBoost, plus log(price) on XGBoost.
+- 2026-10-11 (Jiayang): Did Step 4: GridSearchCV tuning for Random Forest and XGBoost, plus log(price) on XGBoost.
 - 2026-10-11 (Daniel Ibarra, AI): AI re-ran Step 4 and checked its numbers.
 - 2026-10-11 (Daniel Ibarra, manual): Tested Step 4 in JupyterLab and updated AGENTS.md.
 
@@ -93,7 +93,7 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 | Daniel Ibarra | Step 1: EDA + preprocessing pipeline | done |
 | Daniel Ibarra | Step 2: CV setup + `evaluate()` helper | done |
 | Joaquin De La Barrera | Step 3: 4 baseline models | done |
-| Kevin Herrera | Step 4: GridSearch tuning (RF, XGBoost) | done |
+| Jiayang | Step 4: GridSearch tuning (RF, XGBoost) | done |
 | (name) | Steps 5-6: pick model, predictions.csv, README, requirements.txt | not started |
 
 ## Results so far (5-fold CV RMSE, lower is better)
