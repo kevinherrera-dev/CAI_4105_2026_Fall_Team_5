@@ -39,11 +39,11 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 - [x] Wrap preprocessing + model in a `Pipeline` (Daniel Ibarra): use `evaluate(name, model, scale=...)` in notebook
 
 **Step 3: Four required models**
-- [ ] Linear Regression: CV RMSE + train RMSE
-- [ ] Decision Tree: CV RMSE + train RMSE
-- [ ] Random Forest: CV RMSE + train RMSE
-- [ ] XGBoost: CV RMSE + train RMSE
-- [ ] Comparison table filled in (Results section below)
+- [x] Linear Regression: CV RMSE + train RMSE (Joaquin De La Barrera)
+- [x] Decision Tree: CV RMSE + train RMSE (Joaquin De La Barrera)
+- [x] Random Forest: CV RMSE + train RMSE (Joaquin De La Barrera)
+- [x] XGBoost: CV RMSE + train RMSE (Joaquin De La Barrera)
+- [x] Comparison table filled in (Results section below) (Joaquin De La Barrera)
 
 **Step 4: Improve**
 - [ ] GridSearchCV on the best 1-2 models
@@ -73,6 +73,7 @@ AI is allowed, but: (1) AI cannot pass the course for us, (2) AI contributions m
 Format: `- YYYY-MM-DD (Name, tool or "manual"): what it helped with / what you did`
 - 2026-10-10 (Daniel Ibarra, Claude Code): Claude wrote notebook Steps 1-2 (EDA, preprocessing, 5-fold CV setup, baseline), drafted AGENTS.md, the simple draw.io plan and .gitignore, and explained the ML concepts.
 - 2026-10-10 (Daniel Ibarra, manual): Set up the git repo, ran and checked the notebook in JupyterLab, and organized the team workflow.
+- 2026-10-10 (Joaquin De La Barrera, Claude Code): Claude added the Step 3 notebook cells (4 baseline models via `evaluate()`, comparison table, takeaways), ran the notebook, updated AGENTS.md, and explained each cell.
 
 ## Shared setup (everyone uses this, so our numbers are comparable)
 ```python
@@ -88,7 +89,7 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 |---|---|---|
 | Daniel Ibarra | Step 1: EDA + preprocessing pipeline | done |
 | Daniel Ibarra | Step 2: CV setup + `evaluate()` helper | done |
-| (name) | Step 3: 4 baseline models | not started |
+| Joaquin De La Barrera | Step 3: 4 baseline models | done |
 | (name) | Step 4: GridSearch tuning (RF, XGBoost) | not started |
 | (name) | Steps 5-6: pick model, predictions.csv, README, requirements.txt | not started |
 
@@ -96,12 +97,13 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 | Model | Train RMSE | CV RMSE (mean ± std) | Notes |
 |---|---|---|---|
 | Baseline (always guess mean) | 821.4 | 820.7 ± 41.8 | DummyRegressor; every real model must beat this |
-| Linear Regression | | | |
-| Decision Tree | | | |
-| Random Forest | | | |
-| XGBoost | | | |
+| Linear Regression | 520.9 | 526.8 ± 25.3 | scale=True; almost no overfitting but underfits |
+| Decision Tree | 40.7 | 562.4 ± 64.8 | default settings; heavy overfitting |
+| Random Forest | 163.1 | 426.5 ± 33.6 | default (100 trees) |
+| XGBoost | 206.5 | 414.7 ± 22.3 | default; best so far |
 
 ## Decisions log (newest at top)
+- 2026-10-10 (Joaquin De La Barrera): Step 3 used default hyperparameters for all 4 models. XGBoost (414.7) and Random Forest (426.5) are the best, so they are the ones to tune in Step 4. Decision Tree overfits (train 40.7 vs CV 562.4).
 - 2026-10-10 (Daniel Ibarra): Features: NUM_COLS = bathrooms, bedrooms, square_feet, latitude, longitude; CAT_COLS = category, has_photo, state. `ID` excluded.
 - 2026-10-10 (Daniel Ibarra): EDA: no missing values in train; imputers kept as a safety net. price is right-skewed ($200 to $8,800, median $1,274), so try log(price) in Step 4. `category` is 99.96% "apartment" (kept, nearly uninformative).
 - 2026-10-10 (Daniel Ibarra): Scaling only for linear models (`make_preprocessor(scale=True)`); trees use `scale=False`.
