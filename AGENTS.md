@@ -46,8 +46,8 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 - [x] Comparison table filled in (Results section below) (Joaquin De La Barrera)
 
 **Step 4: Improve**
-- [ ] GridSearchCV on the best 1-2 models
-- [ ] (Optional) feature engineering, e.g. log(price), sqft per bedroom
+- [x] GridSearchCV on the best 1-2 models (Jiayang)
+- [x] (Optional) feature engineering, e.g. log(price), sqft per bedroom (Jiayang): log(price) via TransformedTargetRegressor
 
 **Step 5: Pick the winner**
 - [ ] Write a few sentences: RMSE, overfitting gap, complexity, speed, interpretability
@@ -70,10 +70,13 @@ AI is allowed, but: (1) AI cannot pass the course for us, (2) AI contributions m
 - Every claim in the README must match what the notebook actually outputs. No made-up numbers.
 
 ### AI use log
-Format: `- YYYY-MM-DD (Name, tool or "manual"): what it helped with / what you did`
-- 2026-10-10 (Daniel Ibarra, Claude Code): Claude wrote notebook Steps 1-2 (EDA, preprocessing, 5-fold CV setup, baseline), drafted AGENTS.md, the simple draw.io plan and .gitignore, and explained the ML concepts.
+Format: `- YYYY-MM-DD (Name, AI or "manual"): what it helped with / what you did`
+- 2026-10-10 (Daniel Ibarra, AI): AI wrote notebook Steps 1-2 (EDA, preprocessing, 5-fold CV setup, baseline), drafted AGENTS.md, the simple draw.io plan and .gitignore, and explained the ML concepts.
 - 2026-10-10 (Daniel Ibarra, manual): Set up the git repo, ran and checked the notebook in JupyterLab, and organized the team workflow.
-- 2026-10-10 (Joaquin De La Barrera, Claude Code): Claude added the Step 3 notebook cells (4 baseline models via `evaluate()`, comparison table, takeaways), ran the notebook, updated AGENTS.md, and explained each cell.
+- 2026-10-10 (Joaquin De La Barrera, AI): AI added the Step 3 notebook cells (4 baseline models via `evaluate()`, comparison table, takeaways), ran the notebook, updated AGENTS.md, and explained each cell.
+- 2026-10-10 (Jiayang, AI): Used AI for Step 4: GridSearchCV tuning for Random Forest and XGBoost, log(price) target with XGBoost, and the Step 4 write-up.
+- 2026-10-11 (Daniel Ibarra, AI): AI re-ran Step 4 and checked its numbers.
+- 2026-10-11 (Daniel Ibarra, manual): Tested Step 4 in JupyterLab and updated AGENTS.md.
 
 ## Shared setup (everyone uses this, so our numbers are comparable)
 ```python
@@ -90,7 +93,7 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 | Daniel Ibarra | Step 1: EDA + preprocessing pipeline | done |
 | Daniel Ibarra | Step 2: CV setup + `evaluate()` helper | done |
 | Joaquin De La Barrera | Step 3: 4 baseline models | done |
-| (name) | Step 4: GridSearch tuning (RF, XGBoost) | not started |
+| Jiayang | Step 4: GridSearch tuning (RF, XGBoost) | done |
 | (name) | Steps 5-6: pick model, predictions.csv, README, requirements.txt | not started |
 
 ## Results so far (5-fold CV RMSE, lower is better)
@@ -100,9 +103,13 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 | Linear Regression | 520.9 | 526.8 ± 25.3 | scale=True; almost no overfitting but underfits |
 | Decision Tree | 40.7 | 562.4 ± 64.8 | default settings; heavy overfitting |
 | Random Forest | 163.1 | 426.5 ± 33.6 | default (100 trees) |
-| XGBoost | 206.5 | 414.7 ± 22.3 | default; best so far |
+| XGBoost | 206.5 | 414.7 ± 22.3 | default |
+| Random Forest (tuned) | | 420.96 | GridSearch: 200 trees, max_depth=20, min_samples_split=5 |
+| XGBoost (tuned) | | 413.07 | GridSearch: 200 trees, max_depth=5, learning_rate=0.1 |
+| XGBoost (tuned) + log(price) | | 404.86 | best so far; train RMSE not measured yet |
 
 ## Decisions log (newest at top)
+- 2026-10-11 (Daniel Ibarra): Step 4 reviewed. Leading candidate for Step 5 is tuned XGBoost + log(price) (CV RMSE 404.86). Train RMSE still needs checking for overfitting. Full notebook takes ~7-8 min to run.
 - 2026-10-10 (Joaquin De La Barrera): Step 3 used default hyperparameters for all 4 models. XGBoost (414.7) and Random Forest (426.5) are the best, so they are the ones to tune in Step 4. Decision Tree overfits (train 40.7 vs CV 562.4).
 - 2026-10-10 (Daniel Ibarra): Features: NUM_COLS = bathrooms, bedrooms, square_feet, latitude, longitude; CAT_COLS = category, has_photo, state. `ID` excluded.
 - 2026-10-10 (Daniel Ibarra): EDA: no missing values in train; imputers kept as a safety net. price is right-skewed ($200 to $8,800, median $1,274), so try log(price) in Step 4. `category` is 99.96% "apartment" (kept, nearly uninformative).
