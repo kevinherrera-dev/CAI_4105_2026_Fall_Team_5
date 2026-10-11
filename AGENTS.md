@@ -43,13 +43,19 @@ git push -u origin yourname-what-you-do   # 4. push YOUR branch, not main
 - `Data/challenge1_test.csv`: 2,467 rows, price hidden. Use it ONLY for the final predictions.
 - Output: `predictions.csv` with exactly 2 columns, `ID,price`, and 2,467 rows.
 
-## Hard rules (we lose points otherwise)
-- Never fit, tune, or peek using the test file.
+## Hard rules (from the assignment, we lose points otherwise)
+- Use only the training file for development, validation, feature engineering and tuning. Never fit, tune, or peek using the test file; it's only for the final predictions.
 - Never use `ID` as a feature.
-- Evaluate all 4 models: LinearRegression, DecisionTreeRegressor, RandomForestRegressor, XGBRegressor.
-- `random_state=42` everywhere.
+- Evaluate all 4 required models: LinearRegression, DecisionTreeRegressor, RandomForestRegressor, Gradient Boosting (we use XGBRegressor). Extra regression models are allowed, and the final model can be one of them.
+- Don't try to obtain or reconstruct the hidden test prices. No external datasets.
+- Don't share code, models or predictions with other teams.
+- The final solution must be reproducible.
+- Everyone contributes; GitHub activity is the evidence. Make your own commits.
+
+## Team conventions (our choices, to satisfy the rules above)
+- `random_state=42` everywhere (reproducibility).
 - Preprocessing and the model go in ONE sklearn `Pipeline`, so nothing leaks during CV.
-- Make your own commits; commits count as proof of participation.
+- Same 5-fold CV and RMSE for every model (see Shared setup).
 
 ## To-do list (the whole project)
 Mark items `[x]` when done and add `(name)`. Claim an item by putting your name next to it before you start.
@@ -75,18 +81,20 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 - [x] (Optional) feature engineering, e.g. log(price), sqft per bedroom (Jiayang): log(price) via TransformedTargetRegressor
 
 **Step 5: Pick the winner**
-- [ ] Write a few sentences: RMSE, overfitting gap, complexity, speed, interpretability
+- [ ] Measure train RMSE for the tuned candidates (to judge overfitting/underfitting)
+- [ ] Write a few sentences: validation RMSE, overfitting/underfitting, complexity, computational requirements, interpretability
 
 **Step 6: Final predictions**
-- [ ] Refit winner on all of train.csv, predict test.csv
-- [ ] Save `predictions.csv` (`ID,price`, 2,467 rows) and check its shape
+- [ ] Refit the final model on all of train.csv, predict test.csv
+- [ ] Save `predictions.csv` (`ID,price`, one row for every one of the 2,467 test IDs) and check it
 
 **Submission**
-- [ ] Final notebook runs top to bottom (Restart & Run All)
-- [ ] README.md: approach, validation, models, final model, final CV RMSE, Use of AI section
-- [ ] requirements.txt (`pip freeze > requirements.txt`)
+- [ ] Final notebook runs top to bottom (Restart & Run All) and clearly shows the whole workflow, from loading data to predictions
+- [ ] README.md: approach, validation strategy, models evaluated, final model, final validation performance (+ Use of AI section)
+- [ ] requirements.txt so the environment can be reproduced (`pip freeze > requirements.txt`)
+- [ ] Any extra code files the notebook needs are committed
 - [ ] Everyone has their own commits
-- [ ] Everyone submits their own peer-review form
+- [ ] Everyone submits their own `Peer-review form.docx` in Canvas
 
 ## AI use policy (from the syllabus)
 AI is allowed, but: (1) AI cannot pass the course for us, (2) AI contributions must be attributed and true, (3) AI use must be open and documented.
@@ -102,6 +110,7 @@ Format: `- YYYY-MM-DD (Name, AI or "manual"): what it helped with / what you did
 - 2026-10-10 (Jiayang, AI): Used AI for Step 4: GridSearchCV tuning for Random Forest and XGBoost, log(price) target with XGBoost, and the Step 4 write-up.
 - 2026-10-11 (Daniel Ibarra, AI): AI re-ran Step 4 and checked its numbers.
 - 2026-10-11 (Daniel Ibarra, manual): Tested Step 4 in JupyterLab and updated AGENTS.md.
+- 2026-10-11 (Daniel Ibarra, AI): AI checked AGENTS.md against the official Canvas instructions and added missing rules and checklist items.
 
 ## Shared setup (everyone uses this, so our numbers are comparable)
 ```python
@@ -139,6 +148,9 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 - 2026-10-10 (Daniel Ibarra): Features: NUM_COLS = bathrooms, bedrooms, square_feet, latitude, longitude; CAT_COLS = category, has_photo, state. `ID` excluded.
 - 2026-10-10 (Daniel Ibarra): EDA: no missing values in train; imputers kept as a safety net. price is right-skewed ($200 to $8,800, median $1,274), so try log(price) in Step 4. `category` is 99.96% "apartment" (kept, nearly uninformative).
 - 2026-10-10 (Daniel Ibarra): Scaling only for linear models (`make_preprocessor(scale=True)`); trees use `scale=False`.
+
+## Course materials
+Slides, labs and notes from class are in the `Module1`-`Module5` folders on Canvas (not in this repo). The Lab 4&5 notebook (`Module4&5-Lab4&5_TBM_credit_approval_student.ipynb`) uses the same Pipeline / GridSearchCV pattern as this project.
 
 ## Repo layout
 - `challenge1.ipynb`: the final notebook; must run top to bottom. Steps 1-2 done; add each model with `evaluate("Name", Model(random_state=42), scale=...)`
