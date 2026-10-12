@@ -81,18 +81,18 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 - [x] (Optional) feature engineering, e.g. log(price), sqft per bedroom (Jiayang): log(price) via TransformedTargetRegressor
 
 **Step 5: Pick the winner**
-- [ ] Measure train RMSE for the tuned candidates (to judge overfitting/underfitting)
-- [ ] Write a few sentences: validation RMSE, overfitting/underfitting, complexity, computational requirements, interpretability
+- [x] Measure train RMSE for the tuned candidates (to judge overfitting/underfitting) (Kevin Herrera)
+- [x] Write a few sentences: validation RMSE, overfitting/underfitting, complexity, computational requirements, interpretability (Kevin Herrera): also re-ran Grid Search on the log(price) XGBoost (Step 4.6)
 
 **Step 6: Final predictions**
-- [ ] Refit the final model on all of train.csv, predict test.csv
-- [ ] Save `predictions.csv` (`ID,price`, one row for every one of the 2,467 test IDs) and check it
+- [x] Refit the final model on all of train.csv, predict test.csv (Kevin Herrera)
+- [x] Save `predictions.csv` (`ID,price`, one row for every one of the 2,467 test IDs) and check it (Kevin Herrera)
 
 **Submission**
-- [ ] Final notebook runs top to bottom (Restart & Run All) and clearly shows the whole workflow, from loading data to predictions
-- [ ] README.md: approach, validation strategy, models evaluated, final model, final validation performance (+ Use of AI section)
-- [ ] requirements.txt so the environment can be reproduced (`pip freeze > requirements.txt`)
-- [ ] Any extra code files the notebook needs are committed
+- [x] Final notebook runs top to bottom (Restart & Run All) and clearly shows the whole workflow, from loading data to predictions (Kevin Herrera): ~1 min
+- [x] README.md: approach, validation strategy, models evaluated, final model, final validation performance (+ Use of AI section) (Kevin Herrera)
+- [x] requirements.txt so the environment can be reproduced (Kevin Herrera): pinned versions of the packages the notebook uses
+- [x] Any extra code files the notebook needs are committed (Kevin Herrera): none needed, everything is in the notebook
 - [ ] Everyone has their own commits
 - [ ] Everyone submits their own `Peer-review form.docx` in Canvas
 
@@ -111,6 +111,8 @@ Format: `- YYYY-MM-DD (Name, AI or "manual"): what it helped with / what you did
 - 2026-10-11 (Daniel Ibarra, AI): AI re-ran Step 4 and checked its numbers.
 - 2026-10-11 (Daniel Ibarra, manual): Tested Step 4 in JupyterLab and updated AGENTS.md.
 - 2026-10-11 (Daniel Ibarra, AI): AI checked AGENTS.md against the official Canvas instructions and added missing rules and checklist items.
+- 2026-10-11 (Kevin Herrera, AI): AI (Claude Code) added Step 4.6 (Grid Search on log(price) XGBoost), Steps 5-6 (candidate table with train/CV RMSE, final model choice, feature importances, predictions.csv + checks), README.md and requirements.txt, and ran the notebook top to bottom.
+- 2026-10-11 (Kevin Herrera, manual): Reviewed and approved PR #4, reviewed the Step 5-6 results and opened the PR.
 
 ## Shared setup (everyone uses this, so our numbers are comparable)
 ```python
@@ -128,7 +130,7 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 | Daniel Ibarra | Step 2: CV setup + `evaluate()` helper | done |
 | Joaquin De La Barrera | Step 3: 4 baseline models | done |
 | Jiayang | Step 4: GridSearch tuning (RF, XGBoost) | done |
-| (name) | Steps 5-6: pick model, predictions.csv, README, requirements.txt | not started |
+| Kevin Herrera | Steps 5-6: pick model, predictions.csv, README, requirements.txt | done |
 
 ## Results so far (5-fold CV RMSE, lower is better)
 | Model | Train RMSE | CV RMSE (mean ± std) | Notes |
@@ -139,10 +141,13 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 | Random Forest | 163.1 | 426.5 ± 33.6 | default (100 trees) |
 | XGBoost | 206.5 | 414.7 ± 22.3 | default |
 | Random Forest (tuned) | | 420.96 | GridSearch: 200 trees, max_depth=20, min_samples_split=5 |
-| XGBoost (tuned) | | 413.07 | GridSearch: 200 trees, max_depth=5, learning_rate=0.1 |
-| XGBoost (tuned) + log(price) | | 404.86 | best so far; train RMSE not measured yet |
+| Random Forest (tuned), re-measured in Step 5 | 222.0 | 421.0 ± 31.8 | |
+| XGBoost (tuned) | 280.9 | 413.1 ± 23.2 | GridSearch: 200 trees, max_depth=5, learning_rate=0.1 |
+| XGBoost (tuned) + log(price) | 307.2 | 404.9 ± 25.0 | Step 4.5 |
+| **XGBoost + log(price), re-tuned (FINAL)** | 186.2 | **389.8 ± 26.8** | Step 4.6 GridSearch: 300 trees, max_depth=7, learning_rate=0.1, subsample=0.8 |
 
 ## Decisions log (newest at top)
+- 2026-10-11 (Kevin Herrera): FINAL MODEL = XGBoost + log(price) re-tuned (CV RMSE 389.8 ± 26.8, train 186.2). Its gap (≈204) is about the same as tuned RF (≈199), but it has the best CV score. predictions.csv made from it (2,467 rows). Full notebook now runs in ~1 min.
 - 2026-10-11 (Daniel Ibarra): Step 4 reviewed. Leading candidate for Step 5 is tuned XGBoost + log(price) (CV RMSE 404.86). Train RMSE still needs checking for overfitting. Full notebook takes ~7-8 min to run.
 - 2026-10-10 (Joaquin De La Barrera): Step 3 used default hyperparameters for all 4 models. XGBoost (414.7) and Random Forest (426.5) are the best, so they are the ones to tune in Step 4. Decision Tree overfits (train 40.7 vs CV 562.4).
 - 2026-10-10 (Daniel Ibarra): Features: NUM_COLS = bathrooms, bedrooms, square_feet, latitude, longitude; CAT_COLS = category, has_photo, state. `ID` excluded.
@@ -153,6 +158,6 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 Slides, labs and notes from class are in the `Module1`-`Module5` folders on Canvas (not in this repo). The Lab 4&5 notebook (`Module4&5-Lab4&5_TBM_credit_approval_student.ipynb`) uses the same Pipeline / GridSearchCV pattern as this project.
 
 ## Repo layout
-- `challenge1.ipynb`: the final notebook; must run top to bottom. Steps 1-2 done; add each model with `evaluate("Name", Model(random_state=42), scale=...)`
+- `challenge1.ipynb`: the final notebook; runs top to bottom (Steps 1-6) and writes `predictions.csv`
 - `Data/`: the CSVs
 - `predictions.csv`, `README.md`, `requirements.txt`
