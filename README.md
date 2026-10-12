@@ -19,7 +19,7 @@ We predict the monthly rent (`price`) of an apartment from its size, location an
 pip install -r requirements.txt
 jupyter lab challenge1.ipynb
 ```
-Then **Kernel → Restart Kernel and Run All Cells**. It runs in about 1 minute on a laptop and overwrites `predictions.csv` with the same predictions. We used Python 3.14 (Anaconda), and `random_state=42` everywhere.
+Then **Kernel → Restart Kernel and Run All Cells**. It runs in a few minutes on a laptop (about 1-4 min depending on the machine) and overwrites `predictions.csv` with the same predictions. We used Python 3.14 (Anaconda), and `random_state=42` everywhere.
 
 ## Approach
 1. **Data preparation:** 7,398 rows, no missing values. Features: 5 numeric (`bathrooms`, `bedrooms`, `square_feet`, `latitude`, `longitude`) and 3 categorical (`category`, `has_photo`, `state`). `ID` is **not** used. Numeric columns get a median imputer (plus `StandardScaler` for Linear Regression only), and categorical columns get a most-frequent imputer + `OneHotEncoder(handle_unknown="ignore")`. Imputers are a safety net in case the test file has blanks. `price` is right-skewed ($200 to $8,800), so we later tried predicting log(price).
@@ -34,7 +34,7 @@ Then **Kernel → Restart Kernel and Run All Cells**. It runs in about 1 minute 
 | Baseline (always predict the mean) | 821.4 | 820.7 ± 41.8 |
 | Linear Regression | 520.9 | 526.8 ± 25.3 |
 | Decision Tree | 40.7 | 562.4 ± 64.8 |
-| Random Forest | 163.1 | 426.5 ± 33.7 |
+| Random Forest | 163.1 | 426.5 ± 33.6 |
 | XGBoost | 206.5 | 414.7 ± 22.3 |
 | Random Forest, tuned | 222.0 | 421.0 ± 31.8 |
 | XGBoost, tuned | 280.9 | 413.1 ± 23.2 |

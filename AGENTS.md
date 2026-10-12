@@ -89,7 +89,7 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 - [x] Save `predictions.csv` (`ID,price`, one row for every one of the 2,467 test IDs) and check it (Kevin Herrera)
 
 **Submission**
-- [x] Final notebook runs top to bottom (Restart & Run All) and clearly shows the whole workflow, from loading data to predictions (Kevin Herrera): ~1 min
+- [x] Final notebook runs top to bottom (Restart & Run All) and clearly shows the whole workflow, from loading data to predictions (Kevin Herrera): ~1-4 min
 - [x] README.md: approach, validation strategy, models evaluated, final model, final validation performance (+ Use of AI section) (Kevin Herrera)
 - [x] requirements.txt so the environment can be reproduced (Kevin Herrera): pinned versions of the packages the notebook uses
 - [x] Any extra code files the notebook needs are committed (Kevin Herrera): none needed, everything is in the notebook
@@ -113,6 +113,8 @@ Format: `- YYYY-MM-DD (Name, AI or "manual"): what it helped with / what you did
 - 2026-10-11 (Daniel Ibarra, AI): AI checked AGENTS.md against the official Canvas instructions and added missing rules and checklist items.
 - 2026-10-11 (Kevin Herrera, AI): AI (Claude Code) added Step 4.6 (Grid Search on log(price) XGBoost), Steps 5-6 (candidate table with train/CV RMSE, final model choice, feature importances, predictions.csv + checks), README.md and requirements.txt, and ran the notebook top to bottom.
 - 2026-10-11 (Kevin Herrera, manual): Reviewed and approved PR #4 and reviewed the Step 5-6 results.
+- 2026-10-11 (Daniel Ibarra, AI): AI re-ran the PR #5 notebook from scratch (same predictions.csv, ~4 min), checked it against the assignment, fixed small README/notebook wording, and removed two old planning files.
+- 2026-10-11 (Daniel Ibarra, manual): Tested Steps 5-6 in JupyterLab and reviewed PR #5.
 
 ## Shared setup (everyone uses this, so our numbers are comparable)
 ```python
@@ -147,7 +149,7 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 | **XGBoost + log(price), re-tuned (FINAL)** | 186.2 | **389.8 ± 26.8** | Step 4.6 GridSearch: 300 trees, max_depth=7, learning_rate=0.1, subsample=0.8 |
 
 ## Decisions log (newest at top)
-- 2026-10-11 (Kevin Herrera): FINAL MODEL = XGBoost + log(price) re-tuned (CV RMSE 389.8 ± 26.8, train 186.2). Its gap (≈204) is about the same as tuned RF (≈199), but it has the best CV score. predictions.csv made from it (2,467 rows). Full notebook now runs in ~1 min.
+- 2026-10-11 (Kevin Herrera): FINAL MODEL = XGBoost + log(price) re-tuned (CV RMSE 389.8 ± 26.8, train 186.2). Its gap (≈204) is about the same as tuned RF (≈199), but it has the best CV score. predictions.csv made from it (2,467 rows). Full notebook now runs in ~1-4 min.
 - 2026-10-11 (Daniel Ibarra): Step 4 reviewed. Leading candidate for Step 5 is tuned XGBoost + log(price) (CV RMSE 404.86). Train RMSE still needs checking for overfitting. Full notebook takes ~7-8 min to run.
 - 2026-10-10 (Joaquin De La Barrera): Step 3 used default hyperparameters for all 4 models. XGBoost (414.7) and Random Forest (426.5) are the best, so they are the ones to tune in Step 4. Decision Tree overfits (train 40.7 vs CV 562.4).
 - 2026-10-10 (Daniel Ibarra): Features: NUM_COLS = bathrooms, bedrooms, square_feet, latitude, longitude; CAT_COLS = category, has_photo, state. `ID` excluded.
