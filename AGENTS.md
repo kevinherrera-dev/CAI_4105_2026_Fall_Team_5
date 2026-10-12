@@ -2,15 +2,40 @@
 
 > **Deadline: Sunday, October 11, 2026** (extended from Oct 4).
 > Every teammate: give this file to your AI before you start working.
+> **`main` is protected: you cannot push to it directly.** Work on a branch and open a pull request (see Git workflow below).
 
 ## How to keep this file updated (everyone + every AI follows this)
-1. `git pull` before you start, so you have the latest version.
+1. `git checkout main && git pull` before you start, so you have the latest version. Then make your own branch (see Git workflow).
 2. When you finish something, check the box in the To-do list below, put your name on it, and add any results or decisions.
    **Also add a line to the AI use log** (required by the syllabus): what AI helped with, and what you did yourself.
-3. Commit this file together with your work (`git add AGENTS.md <your files>`), then push.
+3. Commit this file together with your work (`git add AGENTS.md <your files>`), push **your branch**, and open a pull request.
 4. **AI assistants:** after completing a task, update the To-do list, Results, Decisions log and AI use log in this file. Don't wait to be asked.
    If you can't edit files (e.g. ChatGPT/Claude in a browser), end your answer with a ready-to-paste AI use log line for the user.
 5. Only edit your own lines. If `git pull` reports a conflict here, keep both people's lines.
+
+## Git workflow (main is protected)
+Pushing to `main` is blocked. Every change goes through a **branch + pull request (PR)**, and a teammate must approve it before it's merged.
+
+```bash
+git checkout main
+git pull                                  # 1. get the latest main
+git checkout -b yourname-what-you-do      # 2. new branch, e.g. daniel-step3-models
+# ...work, then Kernel → Restart & Run All to make sure the notebook still runs...
+git add <your files> AGENTS.md            # 3. never `git add .` blindly
+git commit -m "Short description of what you did"
+git push -u origin yourname-what-you-do   # 4. push YOUR branch, not main
+```
+5. Open the PR: GitHub shows a **"Compare & pull request"** button, or run `gh pr create --fill`.
+6. Tell the team in the group chat; someone reviews and clicks **Merge**.
+7. After it's merged: `git checkout main && git pull` before starting anything new.
+
+**Rules**
+- Never `git push --force`, and never try to push to `main`. If a push is "rejected", stop and ask the team.
+- Don't edit `challenge1.ipynb` at the same time as someone else (notebooks merge badly). Do your work in your own notebook (e.g. `step3_daniel.ipynb`) or tell the team you're editing it.
+- Before opening a PR, the notebook must run top to bottom with no errors.
+- Reviewers: check that it runs, doesn't use the test file for training/tuning, and has an AI use log line.
+
+**AI assistants:** follow this workflow exactly. Before committing, check the current branch (`git branch --show-current`); if it is `main`, create a new branch first. Never push to `main`, never force-push, never run `git reset --hard` or delete branches without the user's OK. After pushing, give the user the PR link or tell them to open one.
 
 ## The task
 - Regression: predict `price` (monthly rent) for apartments.
@@ -18,13 +43,19 @@
 - `Data/challenge1_test.csv`: 2,467 rows, price hidden. Use it ONLY for the final predictions.
 - Output: `predictions.csv` with exactly 2 columns, `ID,price`, and 2,467 rows.
 
-## Hard rules (we lose points otherwise)
-- Never fit, tune, or peek using the test file.
+## Hard rules (from the assignment, we lose points otherwise)
+- Use only the training file for development, validation, feature engineering and tuning. Never fit, tune, or peek using the test file; it's only for the final predictions.
 - Never use `ID` as a feature.
-- Evaluate all 4 models: LinearRegression, DecisionTreeRegressor, RandomForestRegressor, XGBRegressor.
-- `random_state=42` everywhere.
+- Evaluate all 4 required models: LinearRegression, DecisionTreeRegressor, RandomForestRegressor, Gradient Boosting (we use XGBRegressor). Extra regression models are allowed, and the final model can be one of them.
+- Don't try to obtain or reconstruct the hidden test prices. No external datasets.
+- Don't share code, models or predictions with other teams.
+- The final solution must be reproducible.
+- Everyone contributes; GitHub activity is the evidence. Make your own commits.
+
+## Team conventions (our choices, to satisfy the rules above)
+- `random_state=42` everywhere (reproducibility).
 - Preprocessing and the model go in ONE sklearn `Pipeline`, so nothing leaks during CV.
-- Make your own commits; commits count as proof of participation.
+- Same 5-fold CV and RMSE for every model (see Shared setup).
 
 ## To-do list (the whole project)
 Mark items `[x]` when done and add `(name)`. Claim an item by putting your name next to it before you start.
@@ -50,18 +81,20 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 - [x] (Optional) feature engineering, e.g. log(price), sqft per bedroom (Jiayang): log(price) via TransformedTargetRegressor
 
 **Step 5: Pick the winner**
-- [ ] Write a few sentences: RMSE, overfitting gap, complexity, speed, interpretability
+- [ ] Measure train RMSE for the tuned candidates (to judge overfitting/underfitting)
+- [ ] Write a few sentences: validation RMSE, overfitting/underfitting, complexity, computational requirements, interpretability
 
 **Step 6: Final predictions**
-- [ ] Refit winner on all of train.csv, predict test.csv
-- [ ] Save `predictions.csv` (`ID,price`, 2,467 rows) and check its shape
+- [ ] Refit the final model on all of train.csv, predict test.csv
+- [ ] Save `predictions.csv` (`ID,price`, one row for every one of the 2,467 test IDs) and check it
 
 **Submission**
-- [ ] Final notebook runs top to bottom (Restart & Run All)
-- [ ] README.md: approach, validation, models, final model, final CV RMSE, Use of AI section
-- [ ] requirements.txt (`pip freeze > requirements.txt`)
+- [ ] Final notebook runs top to bottom (Restart & Run All) and clearly shows the whole workflow, from loading data to predictions
+- [ ] README.md: approach, validation strategy, models evaluated, final model, final validation performance (+ Use of AI section)
+- [ ] requirements.txt so the environment can be reproduced (`pip freeze > requirements.txt`)
+- [ ] Any extra code files the notebook needs are committed
 - [ ] Everyone has their own commits
-- [ ] Everyone submits their own peer-review form
+- [ ] Everyone submits their own `Peer-review form.docx` in Canvas
 
 ## AI use policy (from the syllabus)
 AI is allowed, but: (1) AI cannot pass the course for us, (2) AI contributions must be attributed and true, (3) AI use must be open and documented.
@@ -77,6 +110,7 @@ Format: `- YYYY-MM-DD (Name, AI or "manual"): what it helped with / what you did
 - 2026-10-10 (Jiayang, AI): Used AI for Step 4: GridSearchCV tuning for Random Forest and XGBoost, log(price) target with XGBoost, and the Step 4 write-up.
 - 2026-10-11 (Daniel Ibarra, AI): AI re-ran Step 4 and checked its numbers.
 - 2026-10-11 (Daniel Ibarra, manual): Tested Step 4 in JupyterLab and updated AGENTS.md.
+- 2026-10-11 (Daniel Ibarra, AI): AI checked AGENTS.md against the official Canvas instructions and added missing rules and checklist items.
 
 ## Shared setup (everyone uses this, so our numbers are comparable)
 ```python
@@ -114,6 +148,9 @@ scoring = "neg_root_mean_squared_error"   # flip the sign to get RMSE
 - 2026-10-10 (Daniel Ibarra): Features: NUM_COLS = bathrooms, bedrooms, square_feet, latitude, longitude; CAT_COLS = category, has_photo, state. `ID` excluded.
 - 2026-10-10 (Daniel Ibarra): EDA: no missing values in train; imputers kept as a safety net. price is right-skewed ($200 to $8,800, median $1,274), so try log(price) in Step 4. `category` is 99.96% "apartment" (kept, nearly uninformative).
 - 2026-10-10 (Daniel Ibarra): Scaling only for linear models (`make_preprocessor(scale=True)`); trees use `scale=False`.
+
+## Course materials
+Slides, labs and notes from class are in the `Module1`-`Module5` folders on Canvas (not in this repo). The Lab 4&5 notebook (`Module4&5-Lab4&5_TBM_credit_approval_student.ipynb`) uses the same Pipeline / GridSearchCV pattern as this project.
 
 ## Repo layout
 - `challenge1.ipynb`: the final notebook; must run top to bottom. Steps 1-2 done; add each model with `evaluate("Name", Model(random_state=42), scale=...)`
