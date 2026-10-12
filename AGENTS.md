@@ -112,7 +112,7 @@ Format: `- YYYY-MM-DD (Name, AI or "manual"): what it helped with / what you did
 - 2026-10-11 (Daniel Ibarra, manual): Tested Step 4 in JupyterLab and updated AGENTS.md.
 - 2026-10-11 (Daniel Ibarra, AI): AI checked AGENTS.md against the official Canvas instructions and added missing rules and checklist items.
 - 2026-10-11 (Kevin Herrera, AI): AI (Claude Code) added Step 4.6 (Grid Search on log(price) XGBoost), Steps 5-6 (candidate table with train/CV RMSE, final model choice, feature importances, predictions.csv + checks), README.md and requirements.txt, and ran the notebook top to bottom.
-- 2026-10-11 (Kevin Herrera, manual): Reviewed and approved PR #4, reviewed the Step 5-6 results and opened the PR.
+- 2026-10-11 (Kevin Herrera, manual): Reviewed and approved PR #4 and reviewed the Step 5-6 results.
 
 ## Shared setup (everyone uses this, so our numbers are comparable)
 ```python
