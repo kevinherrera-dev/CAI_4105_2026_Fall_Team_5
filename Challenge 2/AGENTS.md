@@ -66,13 +66,23 @@ Tell the team in the group chat; someone reviews and merges. After the merge: `g
 - Preprocessing + model go in ONE sklearn `Pipeline`, so nothing leaks during cross-validation.
 - Everyone uses the shared helper from Step 1-2 (same preprocessing, same folds, same scoring), so results are comparable.
 
-## Shared setup (Step 1-2 will turn this into a helper everyone imports)
+## Shared setup: `helpers.py` (everyone imports it, never copy-paste it)
+Work in your own notebook **inside the `Challenge 2/` folder**, then:
 ```python
-from sklearn.model_selection import StratifiedKFold
-cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)  # keeps ~15% buyers in every fold
-scoring = "f1"            # with y = Revenue as 0/1, this is F1 for Revenue=True
+from helpers import load_data, evaluate, results_table, cv_confusion_matrix, make_model_pipeline, CV, SCORING
+from sklearn.neighbors import KNeighborsClassifier
+
+X, y = load_data()                      # 17 features (no ID), y = Revenue as 0/1 (1 = purchase)
+rows = [evaluate("KNN", KNeighborsClassifier(), X, y, scale=True)]
+results_table(rows)                     # train F1, CV F1 ± std, precision, recall, accuracy, fit time
+cv_confusion_matrix(KNeighborsClassifier(), X, y, scale=True)
 ```
-Proposed column groups (to be confirmed by the Step 1 EDA):
+- `scale=True` for Logistic Regression, KNN, SVM, Naïve Bayes. `scale=False` for Decision Tree, Random Forest, Gradient Boosting.
+- `CV` = `StratifiedKFold(5, shuffle=True, random_state=42)`; `SCORING["f1"]` = F1 for Revenue=True.
+- Grid Search: `GridSearchCV(make_model_pipeline(model, scale=...), {"model__<param>": [...]}, cv=CV, scoring=SCORING["f1"])`. Note the `model__` prefix.
+- `load_test()` returns `(X_test, ids)`: Step 6 only.
+- If you think `helpers.py` needs a change, tell the team first: changing it changes everyone's results.
+Column groups (confirmed by the Step 1 EDA):
 - Numeric: Administrative, Administrative_Duration, Informational, Informational_Duration, ProductRelated, ProductRelated_Duration, BounceRates, ExitRates, PageValues, SpecialDay
 - Categorical (one-hot): Month, VisitorType, Weekend, OperatingSystems, Browser, Region, TrafficType (these last four are numbered categories, not amounts)
 - Excluded: ID. Target: Revenue
@@ -81,13 +91,13 @@ Proposed column groups (to be confirmed by the Step 1 EDA):
 Mark items `[x]` when done and add `(name)`. Claim an item by putting your name next to it before you start.
 
 **Step 1: Explore and prepare the data** (Daniel Ibarra)
-- [ ] EDA: columns, types, missing values, target balance, key patterns
-- [ ] Confirm numeric vs categorical lists (write them in Decisions log)
-- [ ] Preprocessing `ColumnTransformer` (scale numeric for linear/distance models, one-hot categoricals)
+- [x] EDA: columns, types, missing values, target balance, key patterns (Daniel Ibarra): `step1-2_base.ipynb` Piece 1
+- [x] Confirm numeric vs categorical lists (write them in Decisions log) (Daniel Ibarra)
+- [x] Preprocessing `ColumnTransformer` (scale numeric for linear/distance models, one-hot categoricals) (Daniel Ibarra): `make_preprocessor(scale=...)` in `helpers.py`
 
 **Step 2: Validation strategy** (Daniel Ibarra)
-- [ ] Shared `StratifiedKFold` + F1 scoring + `evaluate()` helper reporting F1, precision, recall, train vs CV F1
-- [ ] Baseline (DummyClassifier) so every model has something to beat
+- [x] Shared `StratifiedKFold` + F1 scoring + `evaluate()` helper reporting F1, precision, recall, train vs CV F1 (Daniel Ibarra): `helpers.py`, tested with all 7 required models + GridSearchCV
+- [x] Baseline (DummyClassifier) so every model has something to beat (Daniel Ibarra): see Results
 
 **Step 3: Seven required models**
 - [ ] Logistic Regression, Naïve Bayes, KNN, SVM (Person 2: ____)
@@ -111,7 +121,7 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 ## Who does what
 | Person | Task | Notebook | Status |
 |---|---|---|---|
-| Daniel Ibarra | Steps 1-2: EDA, preprocessing, validation, shared helper | `step1-2_base.ipynb` | in progress |
+| Daniel Ibarra | Steps 1-2: EDA, preprocessing, validation, shared helper | `step1-2_base.ipynb` + `helpers.py` | done |
 | ____ | Steps 3-4: LogReg, Naïve Bayes, KNN, SVM + Grid Search | `step3_linear.ipynb` | |
 | ____ | Steps 3-4: Decision Tree, Random Forest, Gradient Boosting + Grid Search | `step3_trees.ipynb` | |
 | ____ | Steps 4-6: feature engineering, final model, predictions, README, requirements | `challenge2.ipynb` | |
@@ -119,6 +129,12 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 ## Results (5-fold stratified CV, F1 for Revenue=True, higher is better)
 | Model | Train F1 | CV F1 (mean ± std) | Precision | Recall | Notes |
 |---|---|---|---|---|---|
+| Baseline: always "no purchase" | 0.000 | 0.000 ± 0.000 | 0.000 | 0.000 | DummyClassifier(most_frequent); 84.5% accuracy but catches no buyers |
+| Baseline: random guess at buyer rate | 0.157 | 0.141 ± 0.015 | 0.139 | 0.143 | DummyClassifier(stratified); every real model must beat this |
 
 ## Decisions log (newest at top)
 Format: `- YYYY-MM-DD (Name): decision and why`
+- 2026-11-14 (Daniel Ibarra): Shared code goes in `helpers.py` (not a notebook) so every teammate's notebook imports the exact same preprocessing, folds and scoring. Preprocessing is always inside a Pipeline with the model, so each CV fold fits scaling/encoding on its own training part only. Preprocessed data has 75 columns (10 numeric + 65 one-hot).
+- 2026-11-14 (Daniel Ibarra): EDA done. No missing values (imputers kept as a safety net). 81 duplicate rows (ignoring ID), all 0-second bounce visits with no purchase: kept as real sessions. Target 84.5% False / 15.5% True → F1 + StratifiedKFold.
+- 2026-11-14 (Daniel Ibarra): Column groups confirmed: 10 numeric (scaled for LogReg/KNN/SVM only) and 7 categorical, one-hot encoded with handle_unknown="ignore". OperatingSystems/Browser/Region/TrafficType are codes, so categorical. Month has 10 values (no Jan/Apr; June is "June").
+- 2026-11-14 (Daniel Ibarra): Strongest signal is PageValues (buy rate 3.6% when 0 vs 56.9% when > 0). New_Visitor 24.7% vs Returning_Visitor 14.0%. Nov highest month (24.8%), Feb lowest (1.4%).
