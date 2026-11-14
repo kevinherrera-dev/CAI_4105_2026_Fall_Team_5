@@ -1,3 +1,5 @@
+> **Working on Challenge 2?** Stop here and read [`Challenge 2/AGENTS.md`](Challenge%202/AGENTS.md) instead. This file is Challenge 1 only (finished).
+
 # Team Context: Challenge 1 (Predict Apartment Rent)
 
 > **Deadline: Sunday, October 11, 2026** (extended from Oct 4).
