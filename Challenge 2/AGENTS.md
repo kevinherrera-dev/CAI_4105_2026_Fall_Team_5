@@ -91,7 +91,7 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 
 **Step 3: Seven required models**
 - [ ] Logistic Regression, Naïve Bayes, KNN, SVM (Person 2: ____)
-- [ ] Decision Tree, Random Forest, Gradient Boosting (Person 3: ____)
+- [x] Decision Tree, Random Forest, Gradient Boosting (Person 3: Jiayang Li)
 - [ ] Comparison table filled in (Results section)
 
 **Step 4: Improve**
@@ -113,7 +113,7 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 |---|---|---|---|
 | Daniel Ibarra | Steps 1-2: EDA, preprocessing, validation, shared helper | `step1-2_base.ipynb` | in progress |
 | ____ | Steps 3-4: LogReg, Naïve Bayes, KNN, SVM + Grid Search | `step3_linear.ipynb` | |
-| ____ | Steps 3-4: Decision Tree, Random Forest, Gradient Boosting + Grid Search | `step3_trees.ipynb` | |
+| Jiayang Li | Steps 3-4: Decision Tree, Random Forest, Gradient Boosting + Grid Search | `step3_trees.ipynb` | |
 | ____ | Steps 4-6: feature engineering, final model, predictions, README, requirements | `challenge2.ipynb` | |
 
 ## Results (5-fold stratified CV, F1 for Revenue=True, higher is better)
