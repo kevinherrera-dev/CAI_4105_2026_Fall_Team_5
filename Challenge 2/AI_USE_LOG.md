@@ -28,3 +28,4 @@ This file is how our team documents it.
 ## Log
 - 2026-11-14 | Daniel Ibarra | Claude Code | Set up the Challenge 2 folder, AGENTS.md, AI_USE_LOG.md, README skeleton and the pull request template; explained the assignment, F1, precision and recall.
 - 2026-11-14 | Daniel Ibarra | manual | Split the work across the team and chose the shared-file workflow.
+- 2026-11-15 | Jiayang Li | ChatGPT | Helped write and debug the tree-model baselines and GridSearchCV code and review the results summary. I ran the notebook in Colab and checked the validation metrics and best parameters.
