@@ -101,11 +101,13 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 
 **Step 3: Seven required models**
 - [ ] Logistic Regression, Naïve Bayes, KNN, SVM (Person 2: ____)
+- [x] Decision Tree, Random Forest, Gradient Boosting (Person 3: Jiayang Li)
+- [x] Logistic Regression, Naïve Bayes, KNN, SVM (Joaquin De La Barrera)
 - [ ] Decision Tree, Random Forest, Gradient Boosting (Person 3: ____)
 - [ ] Comparison table filled in (Results section)
 
 **Step 4: Improve**
-- [ ] GridSearchCV on selected models (Persons 2 and 3, 2 models each)
+- [ ] GridSearchCV on selected models (Persons 2 and 3, 2 models each). Done for LogReg, NB, KNN, SVM (Joaquin De La Barrera); trees pending
 - [ ] (Optional) feature engineering / class_weight / decision threshold (Person 4: ____)
 
 **Step 5: Pick the final model** (Kevin Herrera)
@@ -123,14 +125,19 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 |---|---|---|---|
 | Daniel Ibarra | Steps 1-2: EDA, preprocessing, validation, shared helper | `step1-2_base.ipynb` + `helpers.py` | done |
 | ____ | Steps 3-4: LogReg, Naïve Bayes, KNN, SVM + Grid Search | `step3_linear.ipynb` | |
+| Jiayang Li | Steps 3-4: Decision Tree, Random Forest, Gradient Boosting + Grid Search | `step3_trees.ipynb` | |
+| Daniel Ibarra | Steps 1-2: EDA, preprocessing, validation, shared helper | `step1-2_base.ipynb` | in progress |
+| Joaquin De La Barrera | Steps 3-4: LogReg, Naïve Bayes, KNN, SVM + Grid Search | `step3_linear.ipynb` | done |
 | ____ | Steps 3-4: Decision Tree, Random Forest, Gradient Boosting + Grid Search | `step3_trees.ipynb` | |
 | Kevin Herrera | Steps 5-6: model selection, final notebook, predictions, README, requirements | `challenge2.ipynb` | implemented; execution and final integration pending |
 
 ## Results (5-fold stratified CV, F1 for Revenue=True, higher is better)
 | Model | Train F1 | CV F1 (mean ± std) | Precision | Recall | Notes |
 |---|---|---|---|---|---|
-| Baseline: always "no purchase" | 0.000 | 0.000 ± 0.000 | 0.000 | 0.000 | DummyClassifier(most_frequent); 84.5% accuracy but catches no buyers |
-| Baseline: random guess at buyer rate | 0.157 | 0.141 ± 0.015 | 0.139 | 0.143 | DummyClassifier(stratified); every real model must beat this |
+| Logistic Regression (tuned) | 0.6791 | 0.6796 ± 0.0087 | 0.5910 | 0.8001 | C=0.03, L1, balanced; baseline 0.6333 (Joaquin) |
+| SVM RBF (tuned) | 0.6780 | 0.6773 ± 0.0096 | 0.5887 | 0.7980 | C=1, gamma=0.003, balanced; baseline 0.6499 (Joaquin) |
+| KNN (tuned) | 0.6470 | 0.6335 ± 0.0218 | 0.7257 | 0.5625 | k=31, uniform, p=2; baseline 0.6071 (Joaquin) |
+| Naive Bayes (tuned) | 0.6016 | 0.6003 ± 0.0105 | 0.5181 | 0.7142 | var_smoothing=1.0; baseline 0.4318 (Joaquin) |
 
 ## Decisions log (newest at top)
 Format: `- YYYY-MM-DD (Name): decision and why`
@@ -140,3 +147,4 @@ Format: `- YYYY-MM-DD (Name): decision and why`
 - 2026-11-14 (Daniel Ibarra): Strongest signal is PageValues (buy rate 3.6% when 0 vs 56.9% when > 0). New_Visitor 24.7% vs Returning_Visitor 14.0%. Nov highest month (24.8%), Feb lowest (1.4%).
 
 - 2026-11-15 (Kevin Herrera): Created final selection and prediction notebook with shared pipeline, independent 5-fold CV, leakage safeguards and CSV validation. Random Forest is provisional pending matching Jiayang's tuned parameters and comparison with Joaquin's log-transformed Logistic Regression; notebook has not yet been run and predictions.csv is not yet generated.
+- 2026-11-14 (Joaquin De La Barrera): For LogReg/NB/KNN/SVM, log1p before scaling on counts, durations and PageValues (+0.12 CV F1 for LogReg and KNN). Grid Search picked class_weight="balanced" for LogReg and SVM. LogReg is the best of this group (CV F1 0.680): ties SVM, but faster and more interpretable.
