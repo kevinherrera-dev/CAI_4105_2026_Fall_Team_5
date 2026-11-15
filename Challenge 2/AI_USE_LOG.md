@@ -28,5 +28,4 @@ This file is how our team documents it.
 ## Log
 - 2026-11-14 | Daniel Ibarra | Claude Code | Set up the Challenge 2 folder, AGENTS.md, AI_USE_LOG.md, README skeleton and the pull request template; explained the assignment, F1, precision and recall.
 - 2026-11-14 | Daniel Ibarra | manual | Split the work across the team and chose the shared-file workflow.
-- 2026-11-14 | Daniel Ibarra | Claude Code | Wrote and ran Piece 1 (EDA) of `step1-2_base.ipynb`: data checks, target balance, numeric ranges, category values, buy rates by group, and the summary table; updated AGENTS.md and README.md with the findings.
-- 2026-11-14 | Daniel Ibarra | Claude Code | Wrote `helpers.py` (shared data loading, preprocessing, stratified 5-fold CV, `evaluate()`, results table, confusion matrix) and tested it with all 7 required models and GridSearchCV; wrote and ran Pieces 2-4 of `step1-2_base.ipynb` (preprocessing, validation, baselines); updated AGENTS.md and README.md.
+- 2026-11-14 | Joaquin De La Barrera | Claude | Claude wrote step3_linear.ipynb (baselines + Grid Search for LogReg, NB, KNN, SVM) and the AGENTS.md lines; I ran the notebook in JupyterLab, checked the results matched, and updated AGENTS.md and this log.
