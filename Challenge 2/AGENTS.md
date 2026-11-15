@@ -100,6 +100,8 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 - [x] Baseline (DummyClassifier) so every model has something to beat (Daniel Ibarra): see Results
 
 **Step 3: Seven required models**
+- [ ] Logistic Regression, Naïve Bayes, KNN, SVM (Person 2: ____)
+- [x] Decision Tree, Random Forest, Gradient Boosting (Person 3: Jiayang Li)
 - [x] Logistic Regression, Naïve Bayes, KNN, SVM (Joaquin De La Barrera)
 - [ ] Decision Tree, Random Forest, Gradient Boosting (Person 3: ____)
 - [ ] Comparison table filled in (Results section)
@@ -121,6 +123,9 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 ## Who does what
 | Person | Task | Notebook | Status |
 |---|---|---|---|
+| Daniel Ibarra | Steps 1-2: EDA, preprocessing, validation, shared helper | `step1-2_base.ipynb` + `helpers.py` | done |
+| ____ | Steps 3-4: LogReg, Naïve Bayes, KNN, SVM + Grid Search | `step3_linear.ipynb` | |
+| Jiayang Li | Steps 3-4: Decision Tree, Random Forest, Gradient Boosting + Grid Search | `step3_trees.ipynb` | |
 | Daniel Ibarra | Steps 1-2: EDA, preprocessing, validation, shared helper | `step1-2_base.ipynb` | in progress |
 | Joaquin De La Barrera | Steps 3-4: LogReg, Naïve Bayes, KNN, SVM + Grid Search | `step3_linear.ipynb` | done |
 | ____ | Steps 3-4: Decision Tree, Random Forest, Gradient Boosting + Grid Search | `step3_trees.ipynb` | |
