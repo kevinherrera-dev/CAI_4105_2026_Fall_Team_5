@@ -112,11 +112,13 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 | Person | Task | Notebook | Status |
 |---|---|---|---|
 | Daniel Ibarra | Steps 1-2: EDA, preprocessing, validation, shared helper | `step1-2_base.ipynb` | in progress |
-| Joaquin De La Barrera | Steps 3-4: LogReg, Naïve Bayes, KNN, SVM + Grid Search | `step3_linear.ipynb` | done || ____ | Steps 3-4: Decision Tree, Random Forest, Gradient Boosting + Grid Search | `step3_trees.ipynb` | |
+| Joaquin De La Barrera | Steps 3-4: LogReg, Naïve Bayes, KNN, SVM + Grid Search | `step3_linear.ipynb` | done |
+| ____ | Steps 3-4: Decision Tree, Random Forest, Gradient Boosting + Grid Search | `step3_trees.ipynb` | |
 | ____ | Steps 4-6: feature engineering, final model, predictions, README, requirements | `challenge2.ipynb` | |
 
 ## Results (5-fold stratified CV, F1 for Revenue=True, higher is better)
 | Model | Train F1 | CV F1 (mean ± std) | Precision | Recall | Notes |
+|---|---|---|---|---|---|
 | Logistic Regression (tuned) | 0.6791 | 0.6796 ± 0.0087 | 0.5910 | 0.8001 | C=0.03, L1, balanced; baseline 0.6333 (Joaquin) |
 | SVM RBF (tuned) | 0.6780 | 0.6773 ± 0.0096 | 0.5887 | 0.7980 | C=1, gamma=0.003, balanced; baseline 0.6499 (Joaquin) |
 | KNN (tuned) | 0.6470 | 0.6335 ± 0.0218 | 0.7257 | 0.5625 | k=31, uniform, p=2; baseline 0.6071 (Joaquin) |
