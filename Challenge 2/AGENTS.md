@@ -66,13 +66,23 @@ Tell the team in the group chat; someone reviews and merges. After the merge: `g
 - Preprocessing + model go in ONE sklearn `Pipeline`, so nothing leaks during cross-validation.
 - Everyone uses the shared helper from Step 1-2 (same preprocessing, same folds, same scoring), so results are comparable.
 
-## Shared setup (Step 1-2 will turn this into a helper everyone imports)
+## Shared setup: `helpers.py` (everyone imports it, never copy-paste it)
+Work in your own notebook **inside the `Challenge 2/` folder**, then:
 ```python
-from sklearn.model_selection import StratifiedKFold
-cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)  # keeps ~15% buyers in every fold
-scoring = "f1"            # with y = Revenue as 0/1, this is F1 for Revenue=True
+from helpers import load_data, evaluate, results_table, cv_confusion_matrix, make_model_pipeline, CV, SCORING
+from sklearn.neighbors import KNeighborsClassifier
+
+X, y = load_data()                      # 17 features (no ID), y = Revenue as 0/1 (1 = purchase)
+rows = [evaluate("KNN", KNeighborsClassifier(), X, y, scale=True)]
+results_table(rows)                     # train F1, CV F1 ± std, precision, recall, accuracy, fit time
+cv_confusion_matrix(KNeighborsClassifier(), X, y, scale=True)
 ```
-Proposed column groups (to be confirmed by the Step 1 EDA):
+- `scale=True` for Logistic Regression, KNN, SVM, Naïve Bayes. `scale=False` for Decision Tree, Random Forest, Gradient Boosting.
+- `CV` = `StratifiedKFold(5, shuffle=True, random_state=42)`; `SCORING["f1"]` = F1 for Revenue=True.
+- Grid Search: `GridSearchCV(make_model_pipeline(model, scale=...), {"model__<param>": [...]}, cv=CV, scoring=SCORING["f1"])`. Note the `model__` prefix.
+- `load_test()` returns `(X_test, ids)`: Step 6 only.
+- If you think `helpers.py` needs a change, tell the team first: changing it changes everyone's results.
+Column groups (confirmed by the Step 1 EDA):
 - Numeric: Administrative, Administrative_Duration, Informational, Informational_Duration, ProductRelated, ProductRelated_Duration, BounceRates, ExitRates, PageValues, SpecialDay
 - Categorical (one-hot): Month, VisitorType, Weekend, OperatingSystems, Browser, Region, TrafficType (these last four are numbered categories, not amounts)
 - Excluded: ID. Target: Revenue
@@ -81,13 +91,13 @@ Proposed column groups (to be confirmed by the Step 1 EDA):
 Mark items `[x]` when done and add `(name)`. Claim an item by putting your name next to it before you start.
 
 **Step 1: Explore and prepare the data** (Daniel Ibarra)
-- [ ] EDA: columns, types, missing values, target balance, key patterns
-- [ ] Confirm numeric vs categorical lists (write them in Decisions log)
-- [ ] Preprocessing `ColumnTransformer` (scale numeric for linear/distance models, one-hot categoricals)
+- [x] EDA: columns, types, missing values, target balance, key patterns (Daniel Ibarra): `step1-2_base.ipynb` Piece 1
+- [x] Confirm numeric vs categorical lists (write them in Decisions log) (Daniel Ibarra)
+- [x] Preprocessing `ColumnTransformer` (scale numeric for linear/distance models, one-hot categoricals) (Daniel Ibarra): `make_preprocessor(scale=...)` in `helpers.py`
 
 **Step 2: Validation strategy** (Daniel Ibarra)
-- [ ] Shared `StratifiedKFold` + F1 scoring + `evaluate()` helper reporting F1, precision, recall, train vs CV F1
-- [ ] Baseline (DummyClassifier) so every model has something to beat
+- [x] Shared `StratifiedKFold` + F1 scoring + `evaluate()` helper reporting F1, precision, recall, train vs CV F1 (Daniel Ibarra): `helpers.py`, tested with all 7 required models + GridSearchCV
+- [x] Baseline (DummyClassifier) so every model has something to beat (Daniel Ibarra): see Results
 
 **Step 3: Seven required models**
 - [x] Logistic Regression, Naïve Bayes, KNN, SVM (Joaquin De La Barrera)
