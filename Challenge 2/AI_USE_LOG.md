@@ -28,3 +28,4 @@ This file is how our team documents it.
 ## Log
 - 2026-11-14 | Daniel Ibarra | Claude Code | Set up the Challenge 2 folder, AGENTS.md, AI_USE_LOG.md, README skeleton and the pull request template; explained the assignment, F1, precision and recall.
 - 2026-11-14 | Daniel Ibarra | manual | Split the work across the team and chose the shared-file workflow.
+- 2026-11-14 | Joaquin De La Barrera | Claude | Claude wrote step3_linear.ipynb (baselines + Grid Search for LogReg, NB, KNN, SVM) and the AGENTS.md lines; I ran the notebook in JupyterLab, checked the results matched, and updated AGENTS.md and this log.
