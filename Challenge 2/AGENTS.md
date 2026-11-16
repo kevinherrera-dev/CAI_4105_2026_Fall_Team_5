@@ -110,13 +110,13 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 - [ ] GridSearchCV on selected models (Persons 2 and 3, 2 models each). Done for LogReg, NB, KNN, SVM (Joaquin De La Barrera); trees pending
 - [ ] (Optional) feature engineering / class_weight / decision threshold (Person 4: ____)
 
-**Step 5: Pick the final model** (Person 4: ____)
-- [ ] Short justification: validation F1, overfitting/underfitting, complexity, compute, interpretability
+**Step 5: Pick the final model** (Kevin Herrera)
+- [x] Drafted provisional Random Forest justification and a fresh CV check in `challenge2.ipynb` (Kevin Herrera); final comparison pending #8/#9 integration and execution
 
-**Step 6: Predictions + submission** (Person 4: ____)
-- [ ] Refit final model on all of train, predict test, save `predictions.csv` (`ID,Revenue`, 3,083 rows) and check it
-- [ ] Final `challenge2.ipynb` runs top to bottom (Restart & Run All), from loading data to predictions
-- [ ] `README.md` complete and accurate; `requirements.txt` with pinned versions
+**Step 6: Predictions + submission** (Kevin Herrera)
+- [ ] Code added to refit model, predict test, and validate `predictions.csv` (Kevin Herrera); must run notebook and commit generated CSV
+- [ ] `challenge2.ipynb` created (Kevin Herrera); Restart & Run All verification still required
+- [ ] README updated with honest pending verification status; `requirements.txt` pinned (Kevin Herrera); actual final CV results still pending
 - [ ] Everyone has their own commits
 - [ ] Everyone submits their own `Peer-review form.docx` in Canvas
 
@@ -129,7 +129,7 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 | Daniel Ibarra | Steps 1-2: EDA, preprocessing, validation, shared helper | `step1-2_base.ipynb` | in progress |
 | Joaquin De La Barrera | Steps 3-4: LogReg, Naïve Bayes, KNN, SVM + Grid Search | `step3_linear.ipynb` | done |
 | ____ | Steps 3-4: Decision Tree, Random Forest, Gradient Boosting + Grid Search | `step3_trees.ipynb` | |
-| ____ | Steps 4-6: feature engineering, final model, predictions, README, requirements | `challenge2.ipynb` | |
+| Kevin Herrera | Steps 5-6: model selection, final notebook, predictions, README, requirements | `challenge2.ipynb` | implemented; execution and final integration pending |
 
 ## Results (5-fold stratified CV, F1 for Revenue=True, higher is better)
 | Model | Train F1 | CV F1 (mean ± std) | Precision | Recall | Notes |
@@ -141,4 +141,10 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 
 ## Decisions log (newest at top)
 Format: `- YYYY-MM-DD (Name): decision and why`
+- 2026-11-14 (Daniel Ibarra): Shared code goes in `helpers.py` (not a notebook) so every teammate's notebook imports the exact same preprocessing, folds and scoring. Preprocessing is always inside a Pipeline with the model, so each CV fold fits scaling/encoding on its own training part only. Preprocessed data has 75 columns (10 numeric + 65 one-hot).
+- 2026-11-14 (Daniel Ibarra): EDA done. No missing values (imputers kept as a safety net). 81 duplicate rows (ignoring ID), all 0-second bounce visits with no purchase: kept as real sessions. Target 84.5% False / 15.5% True → F1 + StratifiedKFold.
+- 2026-11-14 (Daniel Ibarra): Column groups confirmed: 10 numeric (scaled for LogReg/KNN/SVM only) and 7 categorical, one-hot encoded with handle_unknown="ignore". OperatingSystems/Browser/Region/TrafficType are codes, so categorical. Month has 10 values (no Jan/Apr; June is "June").
+- 2026-11-14 (Daniel Ibarra): Strongest signal is PageValues (buy rate 3.6% when 0 vs 56.9% when > 0). New_Visitor 24.7% vs Returning_Visitor 14.0%. Nov highest month (24.8%), Feb lowest (1.4%).
+
+- 2026-11-15 (Kevin Herrera): Created final selection and prediction notebook with shared pipeline, independent 5-fold CV, leakage safeguards and CSV validation. Random Forest is provisional pending matching Jiayang's tuned parameters and comparison with Joaquin's log-transformed Logistic Regression; notebook has not yet been run and predictions.csv is not yet generated.
 - 2026-11-14 (Joaquin De La Barrera): For LogReg/NB/KNN/SVM, log1p before scaling on counts, durations and PageValues (+0.12 CV F1 for LogReg and KNN). Grid Search picked class_weight="balanced" for LogReg and SVM. LogReg is the best of this group (CV F1 0.680): ties SVM, but faster and more interpretable.
