@@ -138,9 +138,13 @@ Mark items `[x]` when done and add `(name)`. Claim an item by putting your name 
 | SVM RBF (tuned) | 0.6780 | 0.6773 ± 0.0096 | 0.5887 | 0.7980 | C=1, gamma=0.003, balanced; baseline 0.6499 (Joaquin) |
 | KNN (tuned) | 0.6470 | 0.6335 ± 0.0218 | 0.7257 | 0.5625 | k=31, uniform, p=2; baseline 0.6071 (Joaquin) |
 | Naive Bayes (tuned) | 0.6016 | 0.6003 ± 0.0105 | 0.5181 | 0.7142 | var_smoothing=1.0; baseline 0.4318 (Joaquin) |
+| **Random Forest (tuned, FINAL)** | 0.785 | **0.682 ± 0.008** | 0.603 | 0.785 | balanced, min_samples_leaf=5; baseline 0.617 (Jiayang) |
+| Gradient Boosting (tuned) | 0.720 | 0.670 ± 0.020 | 0.726 | 0.623 | 150 trees, lr=0.05, depth 3; baseline 0.661 (Jiayang) |
+| Decision Tree (default) | 1.000 | 0.563 ± 0.024 | 0.561 | 0.565 | overfits (Jiayang) |
 
 ## Decisions log (newest at top)
 Format: `- YYYY-MM-DD (Name): decision and why`
+- 2026-11-15 (Daniel Ibarra): FINAL MODEL = tuned Random Forest (class_weight=balanced, min_samples_leaf=5). Re-run of challenge2.ipynb: CV F1 0.6818 ± 0.0081, train F1 0.785, 615 predicted buyers in test. Final notebook now includes EDA summary + 7-model comparison; README finalized.
 - 2026-11-14 (Daniel Ibarra): Shared code goes in `helpers.py` (not a notebook) so every teammate's notebook imports the exact same preprocessing, folds and scoring. Preprocessing is always inside a Pipeline with the model, so each CV fold fits scaling/encoding on its own training part only. Preprocessed data has 75 columns (10 numeric + 65 one-hot).
 - 2026-11-14 (Daniel Ibarra): EDA done. No missing values (imputers kept as a safety net). 81 duplicate rows (ignoring ID), all 0-second bounce visits with no purchase: kept as real sessions. Target 84.5% False / 15.5% True → F1 + StratifiedKFold.
 - 2026-11-14 (Daniel Ibarra): Column groups confirmed: 10 numeric (scaled for LogReg/KNN/SVM only) and 7 categorical, one-hot encoded with handle_unknown="ignore". OperatingSystems/Browser/Region/TrafficType are codes, so categorical. Month has 10 values (no Jan/Apr; June is "June").
